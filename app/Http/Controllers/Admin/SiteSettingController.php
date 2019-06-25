@@ -31,13 +31,16 @@ class SiteSettingController extends Controller
         $logo->site_description = $request->site_description;
 
         if($request->hasFile('logo')){
-            $image = $request->file('logo')->store('sitedetails/');
-            $logo->logo =bucketUrl($image);
+            // $image = $request->file('logo')->store('sitedetails/');
+            // $logo->logo =bucketUrl($image);
+            //$fileName = $request->logo->getClientOriginalName();
+            $logo->logo = 'storage/'.$request->logo->store('sitesetting');
         }
         
         if($request->hasFile('favicon')){
-            $fav = $request->file('favicon')->store('sitedetails/');
-            $logo->favicon =bucketUrl($fav);
+            //$fav = $request->file('favicon')->store('sitedetails/');
+            //$logo->favicon =bucketUrl($fav);
+            $logo->favicon = 'storage/'.$request->logo->store('sitesetting');
         }
 
         if($logo->save()){
@@ -68,85 +71,7 @@ class SiteSettingController extends Controller
         $policy = DB::table('role_policies')->where('role_id',$employee->role_id)->first();
         return view('employee.employee.view',compact('employee','loginTimes','policy'));
     }
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-        public function store(Request $request) {
-
-            $this->validate($request,[
-                'name'=>'required',
-                'avatar' => 'nullable|image|mimes:jpeg,png,jpg|max:1024',
-                'role'=>'required',
-                'email'=>'required|email' ,
-                'mobile'=>'required' ,
-                'password'=>'required|min:6',
-                'aadhar_image' => 'required|image|mimes:jpeg,png,jpg|max:1024',
-                'aadhar' => 'required|min:12|numeric',
-                'pan_image' => 'required|image|mimes:jpeg,png,jpg|max:1024',
-                'pan' => 'required|regex:/^([a-zA-Z]){5}([0-9]){4}([a-zA-Z]){1}?$/',  
-                'bank_name' => 'nullable|regex:/^[a-zA-Z ]+$/u',
-                'account_holder_name' => 'nullable|regex:/^[a-zA-Z ]+$/u',
-                'account_number' => 'nullable',
-                'ifsc_code' => 'nullable|regex:/^[A-Za-z]{4}0[a-zA-Z0-9]{6}+$/u',
-                'branch_name' => 'nullable',       
-            ]);
-
-            $employee = new Employee();
-          
-            $employee->role_id = $request->role;
-            $employee->name = $request->name;
-            $employee->mobile = $request->mobile;
-            $employee->email = $request->email;
-            $employee->password = bcrypt($request->password);
-
-            if ($request->hasFile('avatar')) {
-                $employee->avatar = $request->file('avatar')->store('employee/profile'); 
-            }   
-
-            if($employee->save()){ 
-
-                $details = EmployeeDetail::firstOrNew(['employee_id'=>$employee->id]);
-                $details->address = $request->address;
-                $details->gender = $request->gender;
-                $details->dob = $request->dob;
-                $details->save();
-
-                $aadhar = KycAadhar::firstOrNew(['employee_id'=>$employee->id]);
-                $image = $request->file('aadhar_image')->store('employee/kyc');
-                $aadhar->number =$request->aadhar;
-                $aadhar->image =$image;
-                $aadhar->save();
-
-                $pan = KycPan::firstOrNew(['employee_id'=>$employee->id]);
-                $image = $request->file('pan_image')->store('employee/kyc');
-                $pan->number =$request->pan;
-                $pan->image =$image;
-                $pan->save();
-
-                $bank = EmployeeBankDetail::firstOrNew(['employee_id'=>$employee->id]);
-                $bank->bank_name = $request->bank_name;
-                $bank->ifsc_code = $request->ifsc_code;
-                $bank->account_number = $request->account_number;
-                $bank->account_holder_name = $request->account_holder_name;
-                $bank->branch_name = $request->branch_name;
-                $bank->save();
-
-
-                return redirect()->route('employee.employee.index')->with(['class'=>'success','message'=>'Admin Created successfully.']);
-            }
-
-            return redirect()->back()->with(['class'=>'error','message'=>'Whoops, looks like something went wrong ! Try again ...']);
-        }
-        
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
+    
     public function edit(Request $request, Employee $employee)
     {
         $roles = Role::select('id','name')->get()->pluck('name','id')->toArray();

@@ -5,6 +5,9 @@
 <link rel="stylesheet" type="text/css" href="{{asset('admin-assets/app-assets/css/plugins/forms/switch.css')}}">
 <link rel="stylesheet" href="{{asset('admin-assets/dropify/css/dropify.min.css')}}">
 <link rel="stylesheet" href="{{asset('admin-assets/summernote/dist/summernote.css')}}"/>
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/jstree/3.3.3/themes/default/style.min.css" />
+<link href="https://cdnjs.cloudflare.com/ajax/libs/froala-editor/2.5.1/css/froala_editor.pkgd.min.css" rel="stylesheet" type="text/css" />
+<link href="https://cdnjs.cloudflare.com/ajax/libs/froala-editor/2.5.1/css/froala_style.min.css" rel="stylesheet" type="text/css" />
 @endpush
 @section('main')
 
@@ -69,6 +72,25 @@
                         <small class="text-danger">{{ $errors->first('status') }}</small>
                     </div>
 
+
+                    <div class="form-group clearfix categorySection">
+                        <label class="control-label">Select Category</label>
+                        {!! Form::hidden('category',null, ['id'=>'categoryId','required']) !!}
+                        <div class="input-group m-b-10">
+                            {!! Form::text('categories[]', null, ['readonly', 'id'=>'categoryInput', 'class'=>'form-control','required']) !!}
+                            <div class="input-group-btn">
+                                <button id="loadTree" tabindex="-1" class="btn btn-gray" type="button"><i class="fa fa-list"></i></button>
+                            </div>
+                        </div>
+
+                        <div class="categoryTree" style="display: none;position: absolute;z-index: 1;background-color: #ddd;border:1px solid #999;width: 95%;margin-top: 0px;z-index:1000" id="category">
+                            <i class="fa fa-spinner fa-spin"></i>
+                        </div>
+                        <p class="text-danger">{{ $errors->first('category') }}</p>
+                    </div>
+
+
+
                     <div class="form-group {{ $errors->has('image') ? ' has-error' : '' }}">
 
                             {!! Form::label('image', 'Image') !!}
@@ -96,6 +118,9 @@
 <script type="text/javascript" src="{{asset('admin-assets/dropify/dropify.js')}}"></script>
 <script src="{{asset('admin-assets/app-assets/vendors/js/forms/toggle/switchery.min.js')}}" type="text/javascript"></script>
  <script src="{{asset('admin-assets/app-assets/js/scripts/forms/switch.js')}}" type="text/javascript"></script>
+ <script src="//cdnjs.cloudflare.com/ajax/libs/jstree/3.3.3/jstree.min.js"></script>
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/froala-editor/2.5.1//js/froala_editor.pkgd.min.js"></script>
 
 <script type="text/javascript">
 
@@ -128,6 +153,41 @@ popover: { image: [], link: [], air: [] }
 
 
     });
+
+     $("#back").click(function(){
+            window.location.href="{{ route('admin.'.'post'.'.index') }}"
+        }) 
+
+    document.onclick = function(ev){
+        if(ev.target.nodeName !== 'I' && ev.target.nodeName !== 'A')  {
+            $('#category').slideUp('medium');
+        }
+    };
+   $('#loadTree').on('click',function(event){
+       $('#category').slideToggle('medium'); 
+       jsTreeLoad();
+       event.stopPropagation();
+   }); 
+   
+    $('#category').on('changed.jstree',function(e,data){
+        var i, j, r = [],s = []; 
+        for(i = 0, j = data.selected.length; i < j; i++) {
+           r.push(data.instance.get_node(data.selected[i]).text); 
+           s.push(data.instance.get_node(data.selected[i]).id); 
+        } 
+        $('#categoryInput').val(r.join(', ')); 
+        $('#categoryId').val(s.join(', ')); 
+    }); 
+    function jsTreeLoad(){
+        $('#category').jstree({
+           'core' : {
+               'data' : {
+                   'url' : '{{ route('admin.'.request()->segment(2).'.index')}}?type=category',
+               } 
+           }, 
+        }); 
+    } 
+
  </script>
 
 @endpush

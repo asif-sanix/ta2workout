@@ -49,7 +49,7 @@
 
                             {!! Form::label('logo', 'Site Logo') !!}
 
-                            {!! Form::file('logo', ['class'=>'dropify','data-default-file'=>@$logo->logo]) !!}
+                            {!! Form::file('logo', ['class'=>'dropify','data-default-file'=>asset(@$logo->logo)]) !!}
 
                             {!! Form::hidden('checkfile',@$logo->logo, ['id' => 'checkfile']) !!}
 
@@ -64,7 +64,7 @@
 
                             {!! Form::label('favicon', 'Site Favicon Icon') !!}
 
-                            {!! Form::file('favicon', ['class'=>'dropify','data-default-file'=>@$logo->favicon]) !!}
+                            {!! Form::file('favicon', ['class'=>'dropify','data-default-file'=>asset(@$logo->favicon)]) !!}
 
                             {!! Form::hidden('checkfile',@$logo->favicon, ['id' => 'checkfile']) !!}
 

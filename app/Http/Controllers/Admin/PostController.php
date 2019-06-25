@@ -4,7 +4,9 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Http\Resources\Admin\Post\PostCollection;
+use App\Model\Category;
 use App\Model\Post;
+use App\Model\CategoryPost;
 use Illuminate\Http\Request;
 
 class PostController extends Controller
@@ -13,6 +15,15 @@ class PostController extends Controller
     public function index(Request $request)
     {
        if ($request->ajax()) {
+            if ($request->type === 'category') {
+                $categories = Category::orderBy('position','asc')->get();
+                $cat = array();
+                foreach ($categories as $cat2) {
+                    $cat[]=['id'=>$cat2->id,'text'=>$cat2->name,'a_attr'=>['href'=>adminRoute('index','category='.$cat2->id)],'parent'=>($cat2->parent)?$cat2->parent:'#'];
+                }
+                return response()->json($cat);
+            }
+
             $datas = Post::orderBy('created_at','desc')->select(['id','title','slug','status','image','created_at']);
             $search = $request->search['value'];
 
@@ -42,6 +53,7 @@ class PostController extends Controller
      */
     public function store(Request $request)
     {
+        //return $request->all();
         $this->validate($request,[
             'title' => 'required',
             'subtitle' => 'required',
@@ -62,6 +74,12 @@ class PostController extends Controller
         }  
 
         if($post->save()){ 
+            
+            foreach(explode(',',$request->category) as $key => $value){
+                $postCategory = CategoryPost::firstOrNew(['post_id'=>$post->id,'category_id'=>$value]);
+                $postCategory          ->save();
+            }
+
             return redirect()->route('admin.post.index')->with(['class'=>'success','message'=>'Post Created successfully.']);
         }
 
@@ -134,7 +152,10 @@ class PostController extends Controller
      */
     public function destroy($id)
     {
-        category::where('id',$id)->delete();
-        return redirect()->back();
+        if(Post::where('id',$id)->delete()){
+            
+            return response()->json(['message'=>'Post Deleted successfully ...', 'class'=>'success']);  
+        }
+        return response()->json(['message'=>'Whoops, looks like something went wrong ! Try again ...', 'class'=>'error']);
     }
 }

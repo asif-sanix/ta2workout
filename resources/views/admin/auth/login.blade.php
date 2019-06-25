@@ -8,8 +8,8 @@
   <meta name="keywords" content="admin template, stack admin template, dashboard template, flat admin template, responsive admin template, web app">
   <meta name="author" content="PIXINVENT">
   <title>Login Page - Stack Responsive Bootstrap 4 Admin Template</title>
-  <link rel="apple-touch-icon" href="{{\App\Model\SiteSetting::latest()->value('favicon')}}">
-  <link rel="shortcut icon" type="image/x-icon" href="{{\App\Model\SiteSetting::latest()->value('favicon')}}">
+  <link rel="apple-touch-icon" href="{{asset(\App\Model\SiteSetting::latest()->value('favicon'))}}">
+  <link rel="shortcut icon" type="image/x-icon" href="{{asset(\App\Model\SiteSetting::latest()->value('favicon'))}}">
   <link href="https://fonts.googleapis.com/css?family=Montserrat:300,300i,400,400i,500,500i%7COpen+Sans:300,300i,400,400i,600,600i,700,700i"
   rel="stylesheet">
   <!-- BEGIN VENDOR CSS-->
@@ -63,7 +63,7 @@ data-open="click" data-menu="vertical-menu" data-col="1-column">
                 
             <div class="card-header border-0" style="padding: 0">
               <div class="card-title text-center">
-                <img style="max-height: 85px;" src="{{\App\Model\SiteSetting::latest()->value('logo')}}" alt="branding logo">
+                <img style="max-height: 65px;" src="{{asset(\App\Model\SiteSetting::latest()->value('logo'))}}" alt="branding logo">
               </div>
               <h6 class="card-subtitle line-on-side text-muted text-center font-small-3 pt-2">
                 <span>Login with Admin</span>

@@ -8,8 +8,8 @@
   <meta name="keywords" content="admin template, stack admin template, dashboard template, flat admin template, responsive admin template, web app">
   <meta name="author" content="PIXINVENT">
   <title>Admin | @yield('title','ERP')</title>
-  <link href="{{App\Model\SiteSetting::latest()->value('favicon')}}" rel="icon">
-  <link href="{{App\Model\SiteSetting::latest()->value('favicon')}}" rel="apple-touch-icon">
+  <link href="{{asset(\App\Model\SiteSetting::latest()->value('logo'))}}" rel="icon">
+  <link href="{{asset(\App\Model\SiteSetting::latest()->value('logo'))}}" rel="apple-touch-icon">
   <link href="https://fonts.googleapis.com/css?family=Montserrat:300,300i,400,400i,500,500i%7COpen+Sans:300,300i,400,400i,600,600i,700,700i"
   rel="stylesheet">
   <!-- BEGIN VENDOR CSS-->
@@ -66,7 +66,66 @@ data-open="click" data-menu="vertical-menu" data-col="2-columns">
         Command: toastr["{{Session::get('class')}}"](" {{Session::get('message')}}")
     </script>
   @endif
+ 
+   <<script>
+     function deleteAjax(url,callback=null){  
+    if (confirm('Are you sure to delete this data')){                      
+        $.ajax({
+            url:url,
+            method: 'post',
+            data:{'_method':'DELETE','_token':'{{ csrf_token() }}'},
+            dataType:'json',
+            success:function(response){
+                if(response.class){
+                    Command: toastr[response.class](response.message);
 
+                }
+                if(typeof callback == 'function'){
+                    callback(response);
+                }
+                if(document.getElementsByClassName('dataTableAjax').length){
+                    $('.dataTableAjax').DataTable().draw('page');
+                }
+
+                if(document.getElementByID('dataTableAjax').length){
+                    $('#dataTableAjax').DataTable().draw('page');
+                }
+
+                else if(document.getElementsByClassName('datatable').length){
+                    $('.datatable').DataTable().draw('page');
+                }
+
+                
+                else{
+                     setTimeout(function(){
+                        window.location.reload();
+                    }, 300)
+                }
+            }
+        });
+    }
+    return false;
+}
+
+function deleteForm(url){
+    if (confirm('Are you sure to delete this data')){
+        var form =  document.createElement("form");
+        var node = document.createElement("input");
+        form.action = url;
+        form.method = 'POST' ;
+        node.name  = '_method';
+        node.value = 'delete';
+        form.appendChild(node.cloneNode());
+        node.name  = '_token';
+        node.value = '{{ csrf_token() }}';
+        form.appendChild(node.cloneNode());
+        form.style.display = "none";
+        document.body.appendChild(form);
+        form.submit();
+        document.body.removeChild(form);
+    }
+}
+   </script>
   @stack('scripts')
 </body>
 </html>

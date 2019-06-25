@@ -80,9 +80,15 @@
                         render: function(data, type, row) {
                             if (type === 'display') {
                                 var btn = '';
-                                btn += '<a class="btn btn-info btn-xs" href="{{ request()->url() }}/' + row['id'] + '"><i class="fa fa-eye"></i></a>&nbsp;';
-                                @can('delete_project')
-                                    btn += '<button type="button" onclick="deleteAjax(\''+window.location.href+'/'+row['id']+'\')" class="btn btn-xs btn-danger"><i class="fa fa-trash"></i></button>&nbsp;';
+                                
+                                btn += '<a class="btn btn-social-icon btn-outline-success btn-xs" href="{{ request()->url() }}/' + row['id'] + '"><i class="fa fa-eye"></i></a>&nbsp;';
+
+                                @can('edit_slider')
+                                    btn+='<a class="btn btn-xs btn-social-icon btn-outline-info" href="'+window.location.href+'/'+row['id']+'/edit"><i class="fa fa-pencil-square-o"></i></a> ';
+                                @endcan
+
+                                @can('delete_slider')
+                                    btn += '<button type="button" onclick="deleteAjax(\''+window.location.href+'/'+row['id']+'\')" class="btn btn-xs btn-social-icon btn-outline-danger"><i class="fa fa-trash"></i></button>&nbsp;';
                                 @endcan
                                
 
